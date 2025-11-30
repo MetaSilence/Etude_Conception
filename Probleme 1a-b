@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+n_eau = 1.33
+n_cell = 3.5
+wav = np.arange(4, 22.01, 0.01)
+nanoaxis = np.arange(400, 2201, 1)
+irrad = (6.61e5 / (wav ** 5 * (np.exp(2484/(wav * 10 ** 2))-1)))
+
+plt.plot(wav, irrad)
+plt.xlabel('λ(nm)')
+plt.ylabel('P(W)')
+plt.title("Evolution de la puissance pour un systeme sans couche anti réflective")
+plt.show()
+Gamma = (n_eau-n_cell)/(n_eau+n_cell)
+
+T = 1 - Gamma**2
+print('La réflectivité est',Gamma**2 )
+P = np.trapz(T*irrad, wav)
+
+print("La puissance transmise est",P)
+
+def Q(n_i, n_t1):
+
+    Gamma= (n_t1-n_i)/(n_i+n_t1)
+    tau=2*n_t1/(n_i+n_t1)
+    
+    return (1/tau)*np.array([[1,Gamma],[Gamma,1]])
+
+
+def P(n, d, wav):
+
+    x=np.exp(1j*2*np.pi*n*d/wav)
+
+    return np.array([[x,0],[0,1/x]])
+    
+
+
+
+def T(Q01, Q12, Q23, P1, P2):
+    
+    return Q01 * Q12 * Q23 * P1 * P2
